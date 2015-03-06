@@ -1,7 +1,7 @@
 /* ------------------------------------------------------------------
-|Information: This class extends  from JPanel				                  
+|Information: This class extends  from JPanel.				                  
 |Purpose: 			  The purpose of this class is to create and panel 
-|						  with an image of a space ship drawn in it	
+|						  with an image of a space ship drawn in it.	
 |--------------------------------------------------------------------*/
 
 import javax.swing.*;
