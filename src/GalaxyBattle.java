@@ -9,7 +9,7 @@ public class GalaxyBattle extends JApplet {
 	private Background mainPanel;						//The background panel
 	private ShipFrame userShip;							//The user ship
 	
-	private Image shipImg, galaxyImg;					//Images
+	private Image shipImg, galaxyImg, weaponImg;					//Images
 
     private final int WIDTH = 1000;						//Width of the game panel
     private final int HEIGHT = 500;						//Height of the game panel		
@@ -53,6 +53,7 @@ public class GalaxyBattle extends JApplet {
 	public void loadImages()
 	{
 		shipImg = loadImage("Images/spaceship.png");
+		weaponImg = loadImage("Images/beam.png");
 	}
 
 	/*--------------------------------------------------
@@ -80,9 +81,13 @@ public class GalaxyBattle extends JApplet {
 	|--------------------------------------------------*/
 	public void loadUser()
 	{
+		int ammo = 1;
 		AxisLimit x = new AxisLimit(20,WIDTH-70);
 		AxisLimit y = new AxisLimit(HEIGHT-100,HEIGHT-50);
-		userShip = new ShipFrame(shipImg,(WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT);
+		userShip = new ShipFrame(shipImg,ammo,true,weaponImg,(WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT);
+		userShip.getWeapon(0).setTime(12);
+		userShip.getWeapon(1).setTime(12);
+		userShip.getWeapon(2).setTime(12);
 	}
 	
 	/*--------------------------------------------------
@@ -96,6 +101,10 @@ public class GalaxyBattle extends JApplet {
 	{
 		mainPanel.add(userShip);
 		userShip.moveLeft(1);
+		for(int i = 0; i<(userShip.getWeapon()).length;i++)
+		{
+			mainPanel.add(userShip.getWeapon()[i]);
+		}
 	}
 	
 	/*--------------------------------------------------

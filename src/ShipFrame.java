@@ -1,10 +1,11 @@
 /* ------------------------------------------------------------------
-|Information: This class extends  from JPanel.				                  
+|Basic Information: This class extends  from JPanel				                  
 |Purpose: 			  The purpose of this class is to create and panel 
-|						  with an image of a space ship drawn in it.	
+|						  with an image of a space ship drawn in it	
 |--------------------------------------------------------------------*/
 
 import javax.swing.*;
+
 import java.awt.*;
 
 class ShipFrame extends JPanel{
@@ -22,6 +23,16 @@ class ShipFrame extends JPanel{
 	
 	private final int MAIN_PANEL_WIDTH;			//hold the main panel dimensions
 	private final int MAIN_PANEL_HEIGHT;		//same as above
+	
+	public final static String[] AMMO_SLOTS = new String[]{"center","left","right"}; //Holds options of weapon locations.
+	private Point[] slotLocations;
+	
+	private Image beamImg;							//Holds weapon image to be passed to the weapon constructor
+	public static final int MAX_AMMO = 3;		//Defines the maximum amount of ammo
+	private Weapon[] weapon;						//Array of weapons to be added to the ship
+	private int ammoIndex;							//Which weapon to be used
+	private int ammo;								//current ammo limit
+	private boolean direction = true;
 
 	/*--------------------------------------------------
 	|	CONSTRUCTOR													 
@@ -31,10 +42,11 @@ class ShipFrame extends JPanel{
 	|	layout to null, opaque value to false, and 		
 	|	visibility to true.   									
 	|--------------------------------------------------*/
-	ShipFrame(Image sI, int initialX,int initialY, 
+	ShipFrame(Image sI, int shipAmmo, boolean d, Image bI, int initialX,int initialY, 
 			AxisLimit x, AxisLimit y,int mainPanelWidth, int mainPanelHeight)
    {
 		shipImg = sI;
+		beamImg = bI;
 		
 		xbound = x;
 		ybound = y;
@@ -45,8 +57,18 @@ class ShipFrame extends JPanel{
 		INIT_SHIPLOCATION_X = initialX;
 		INIT_SHIPLOCATION_Y = initialY;
 		
+		weapon = new Weapon[MAX_AMMO];
+		ammo = shipAmmo;
+		direction = d;
+		
 		setSize(WIDTH,HEIGHT);
 		setLocation(INIT_SHIPLOCATION_X,INIT_SHIPLOCATION_Y);
+		
+		ammoIndex = 0;
+		ammo = 3;
+		
+		slotLocations = new Point[3];
+		this.loadWeapon();
 		
 		setLayout(null);
 		setOpaque(false);
@@ -94,10 +116,70 @@ class ShipFrame extends JPanel{
 	{
 		return INIT_SHIPLOCATION_Y;
 	}
+	
+	/*--------------------------------------------------
+	|	MAX_AMMO Assessor           				 			 
+	|--------------------------------------------------*/
+	/* returns maximum ammo value allowed					
+	---------------------------------------------------*/
+	
+	public int getMax_Ammo()
+	{
+		return MAX_AMMO;
+	}
+	/*--------------------------------------------------
+	|	Weapon Assessor           				 				 
+	|--------------------------------------------------*/
+	/* Prerequisite: index passed must be less than 	 
+	|	MAX_AMMO.													 
+	|	returns weapon corresponding to the index passed 
+	---------------------------------------------------*/
+	public Weapon getWeapon(int index)
+	{
+		if(index < MAX_AMMO)
+		{
+			return weapon[index];
+		}
+		else
+		{
+			System.out.println("ERROR: weapon index out of boundaries.");
+			return null;
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	Weapon[] Assessor           				 			
+	|--------------------------------------------------*/
+	/* returns array of weapons      						
+	---------------------------------------------------*/
+	public Weapon[] getWeapon()
+	{
+		return weapon;
+	}
+	
+	/*--------------------------------------------------
+	|	ammoIndex Assessor           				 			
+	|--------------------------------------------------*/
+	/* returns ammoIndex			      						
+	---------------------------------------------------*/
+	public int getAmmoIndex()
+	{
+		return ammoIndex;
+	}
+	
+	/*--------------------------------------------------
+	|	ammo Assessor           				 			
+	|--------------------------------------------------*/
+	/* returns ammo			      						
+	---------------------------------------------------*/
+	public int getAmmo()
+	{
+		return ammo;
+	}
 
 	/*--------------------------------------------------
 	|	moveLeft Location Method	           		     	
-	|--------------------------------------------------
+	|---------------------------------------------------
 	| Change the ship's X location based on the space 
 	|	value being passed. Thus moving ship to the     
 	|	left.				      									
@@ -152,6 +234,106 @@ class ShipFrame extends JPanel{
 		{
 			setLocation(getX(),getY()+space);
 		}	
+	}
+	
+	/*--------------------------------------------------
+	|	loadWeapon Method	           		     				
+	|--------------------------------------------------*/
+	/* when called initialize this class's array of 	
+	|	weapons.	      											
+	---------------------------------------------------*/
+	private void loadWeapon() {
+		for(int i =0; i<weapon.length;i++)
+		{
+			weapon[i] = new Weapon(beamImg,direction,AMMO_SLOTS[i%AMMO_SLOTS.length],MAIN_PANEL_HEIGHT);
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	increaseAmmo Method	           		     			 
+	|--------------------------------------------------*/
+	/*	Prerequisite: ammo must be less than MAX_AMMO	
+	|	when called ammo will increase by 1 if limit	
+	|	has not been met yet.										      											|
+	---------------------------------------------------*/
+	public void increaseAmmo()
+	{
+		if(ammo < MAX_AMMO)
+		{
+			 ammo++;
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	decreaseAmmo Method	           		     			 
+	|--------------------------------------------------*/
+	/*	Prerequisite: ammo must be less than MAX_AMMO	
+	|	when called ammo will increase by 1 if limit	
+	|	has not been met yet.										
+	---------------------------------------------------*/
+	public void decreaseAmmo()
+	{
+		if(ammo > 0)
+		{
+			ammo--;
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	loadSlot Method	           		     			 
+	|--------------------------------------------------*/
+	/*	  This function will move the weapon panel north 
+	|	or south depending on the direction value.                   									|	
+	---------------------------------------------------*/
+	public void loadSlot(int weaponIndex)
+	{
+		slotLocations = new Point[]{new Point(getX()+18,getY()-1),
+		     new Point(getX()+4,getY()-1),new Point(getX()+30,getY()-1)};
+			  
+		weapon[weaponIndex].setLocation(slotLocations[findSlot(slotLocations,weaponIndex)]);
+			  
+	}
+	
+	/*--------------------------------------------------
+	|	findSlot Method	  	         		     			 
+	|--------------------------------------------------*/
+	/*	  This function will return which slot position	
+	|	the weapon index is supposed  to be positioned	
+	|	on the ship											           									|	
+	---------------------------------------------------*/
+	public int findSlot(Point[] slotL,int wI)
+	{
+		int slotIndex = 0;
+		
+		for(int i =0; i<slotL.length;i++)
+		{
+				if((weapon[wI].getSlot()).equals(AMMO_SLOTS[i]))
+				{
+					slotIndex = i;
+				}
+		}
+		return slotIndex;
+	}
+	
+	/*--------------------------------------------------
+	|	shootWeapon Method										 
+	|--------------------------------------------------*/
+	/*	This method fires the designated weapon index   
+	---------------------------------------------------*/
+	public void shootWeapon()
+	{	
+		if(ammoIndex == ammo)
+		{
+			ammoIndex = 0;
+		}
+		
+		ammoIndex = ammoIndex%ammo;
+		if(!weapon[ammoIndex].isAlive())
+		{
+			loadSlot(ammoIndex);
+			weapon[ammoIndex].shoot();
+			ammoIndex++;
+		}
 	}
 	
 	/*-------------------------------------------------

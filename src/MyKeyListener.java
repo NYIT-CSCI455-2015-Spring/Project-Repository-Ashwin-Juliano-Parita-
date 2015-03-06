@@ -54,6 +54,10 @@ public class MyKeyListener extends KeyAdapter
 			{ 
 				ship.moveDown(space);							// Ship moves down
 			}
+			if(keyCode == KeyEvent.VK_SPACE) 					// Shoot the ship weapon
+			{
+				ship.shootWeapon();								// Ship shoots beam
+			}
 		}catch(NullPointerException ex){System.out.println(ex.getLocalizedMessage());}
 	}	
 }
