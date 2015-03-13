@@ -54,6 +54,7 @@ public class GalaxyBattle extends JApplet {
 	{
 		shipImg = loadImage("Images/spaceship.png");
 		weaponImg = loadImage("Images/beam.png");
+		galaxyImg = loadImage("Images/space.png")
 	}
 
 	/*--------------------------------------------------
