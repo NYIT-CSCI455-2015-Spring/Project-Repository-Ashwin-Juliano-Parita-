@@ -14,6 +14,8 @@ class ShipFrame extends JPanel{
 	private AxisLimit ybound;					//Limits y-axis moves
 	
 	private Image shipImg;						//Holds ship image to be drawn in this panel
+	private int life;							//Amount of hits it can take
+	private boolean dead = false;				//if false means it is still alive
 
 	private final int WIDTH = 40;				//This panel width
 	private final int HEIGHT = 30;				//This panel height
@@ -33,6 +35,8 @@ class ShipFrame extends JPanel{
 	private int ammoIndex;							//Which weapon to be used
 	private int ammo;								//current ammo limit
 	private boolean direction = true;
+	
+	private Animation explosion;					//manipulates the explosion animation
 
 	/*--------------------------------------------------
 	|	CONSTRUCTOR													 
@@ -42,8 +46,8 @@ class ShipFrame extends JPanel{
 	|	layout to null, opaque value to false, and 		
 	|	visibility to true.   									
 	|--------------------------------------------------*/
-	ShipFrame(Image sI, int shipAmmo, boolean d, Image bI, int initialX,int initialY, 
-			AxisLimit x, AxisLimit y,int mainPanelWidth, int mainPanelHeight)
+	ShipFrame(Image sI, int shipLife, int shipAmmo, boolean d, Image bI, int initialX,int initialY, 
+			AxisLimit x, AxisLimit y,int mainPanelWidth, int mainPanelHeight, Image[] explo)
    {
 		shipImg = sI;
 		beamImg = bI;
@@ -57,6 +61,7 @@ class ShipFrame extends JPanel{
 		INIT_SHIPLOCATION_X = initialX;
 		INIT_SHIPLOCATION_Y = initialY;
 		
+		life = shipLife;
 		weapon = new Weapon[MAX_AMMO];
 		ammo = shipAmmo;
 		direction = d;
@@ -67,12 +72,66 @@ class ShipFrame extends JPanel{
 		ammoIndex = 0;
 		ammo = 3;
 		
+		explosion = new Animation(explo,20);
+		
 		slotLocations = new Point[3];
 		this.loadWeapon();
 		
 		setLayout(null);
 		setOpaque(false);
 		setVisible(true);
+	}
+	
+	/*--------------------------------------------------
+	|	Life Incrementer											 
+	|--------------------------------------------------*/
+	/*	This method increments life by 1.					
+	---------------------------------------------------*/
+	public void increaseLife()
+	{
+		life++;
+	}
+	
+	/*--------------------------------------------------
+	|	Life Decrementer											 
+	|--------------------------------------------------*/
+	/*	decreseases life by 1 if life isn't 0, when life
+	|	reaches 0, it will set ship  to dead, and play	
+	|	animation and audio.										
+	---------------------------------------------------*/
+	public void decreaseLife()
+	{
+		if(life > 0)
+		{
+			life--;
+		}
+		if(life == 0)
+		{
+			dead = true;
+			this.repaint();
+			this.add(explosion);
+			explosion.startAnimation();
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	Life Accessor											 
+	|--------------------------------------------------*/
+	/*	Gets the life of the ship									
+	---------------------------------------------------*/
+	public int getLife()
+	{
+		return life;
+	}
+	
+	/*--------------------------------------------------
+	|	Dead Accessor											 
+	|--------------------------------------------------*/
+	/*	Checks if ship is dead										
+	---------------------------------------------------*/
+	public boolean isDead()
+	{
+		return dead;
 	}
 	
 	/*-------------------------------------------------
@@ -345,10 +404,13 @@ class ShipFrame extends JPanel{
 	{
 		g = (Graphics2D)g;
 		super.paintComponent(g);
+		if(!dead)
+		{
 			try{
 				g.drawImage(shipImg,0,0,this);
 			}catch(NullPointerException ex){
 				System.out.println(ex.getCause());
 			}
+		}
 	}
 }
