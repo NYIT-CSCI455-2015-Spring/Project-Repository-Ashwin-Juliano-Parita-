@@ -13,8 +13,12 @@ public class GalaxyBattle extends JApplet {
 	private ShipFrame userShip;							//The user ship
 	private ShipFrame[] alienShip;						//Array of ShipFrame to place the aliens in
 	
+<<<<<<< HEAD
 	private Image shipImg, galaxyImg, weaponImg, 		//Images
 	level_img;											
+=======
+	private Image shipImg, galaxyImg, weaponImg;		//Images
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 	private Image[]alienImg;							//Array of images for the aliens
 	private Image[] explosionImgs;					    //Array of images for the explosion animation
 
@@ -36,6 +40,7 @@ public class GalaxyBattle extends JApplet {
 		loadMainObjects();
 		addUserShip();
 		runMainPanel();	
+<<<<<<< HEAD
 		runGame(1);
    }
 	
@@ -43,10 +48,20 @@ public class GalaxyBattle extends JApplet {
 	|	runGame(int level)									    
 	|--------------------------------------------------
 	|  Starts the game by loading the aliens in their   
+=======
+		runGame();
+   }
+	
+	/*--------------------------------------------------
+	|	runGame()									    
+	|--------------------------------------------------*/
+	/*  Starts the game by loading the aliens in their   
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 	|	starting position. Adds the user to the screen   
 	|	along with the aliens. Adds the menu to the 		 
 	|	screen and runs the simulation of the game.      
 	|--------------------------------------------------*/
+<<<<<<< HEAD
 	public void runGame(int lev)
 	{	
 		loadAllienShips(lev*4);
@@ -54,6 +69,14 @@ public class GalaxyBattle extends JApplet {
 		runCollisionCheck();
 		addAliens();
 		mainPanel.repaint();
+=======
+	public void runGame()
+	{		 
+		loadAllienShips(5);
+		addUserShip();	
+		runCollisionCheck();
+		addAliens();
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 	}
 	
 	/*-------------------------------------------------
@@ -83,7 +106,11 @@ public class GalaxyBattle extends JApplet {
 	public void runCollisionCheck()
 	{
 		collision = null;
+<<<<<<< HEAD
 		collision = new Collision(this,userShip,alienShip,level,WIDTH,HEIGHT);
+=======
+		collision = new Collision(this,userShip,alienShip,WIDTH,HEIGHT);
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 		collision.start();
 	}
 	
@@ -119,7 +146,10 @@ public class GalaxyBattle extends JApplet {
 		weaponImg = loadImage("Images/beam.png");
 		galaxyImg = loadImage("Images/space.png");
 		alienImg = new Image[]{loadImage("Images/alien.png")};
+<<<<<<< HEAD
 		level_img = loadImage("Images/levelup.png");
+=======
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 		loadExplosionImages();
 	}
 
@@ -191,6 +221,33 @@ public class GalaxyBattle extends JApplet {
 	}
 	
 	/*--------------------------------------------------
+	|	loadAllienShips(int length)							 
+	|--------------------------------------------------*/
+	/* Takes in an int as a parameter                   
+	|									                     	 
+	|  Loads all of the alien ships with their settings 
+	|	such as life, how many points they are worth,    
+	|	their ammo and initial position.					    
+	|--------------------------------------------------*/
+	public void loadAllienShips(int length)
+	{
+		alienShip = null;
+		alienShip = new ShipFrame[length];
+		int life = 1;
+		int ammo = 1;
+		int init_x = 400;
+		int init_y = 100;
+		AxisLimit x = new AxisLimit(0,1200);
+		AxisLimit y = new AxisLimit(0,1200);
+		
+		for(int i = 0; i< alienShip.length;i++)
+		{
+			alienShip[i] = new ShipFrame(alienImg[0],life,ammo,false,weaponImg,init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
+			init_x = init_x + 60;
+		}
+	}
+	
+	/*--------------------------------------------------
 	|	addUserShip()							                
 	|--------------------------------------------------
 	| No parameter                                     
@@ -213,8 +270,12 @@ public class GalaxyBattle extends JApplet {
 	/* Adds all the aliens to the screen                
 	|--------------------------------------------------*/
 	public void addAliens()
+<<<<<<< HEAD
 	{ 		
 		System.out.println("Adding Aliens");
+=======
+	{ 			
+>>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 		for(int i = 0; i<alienShip.length;i++)
 		{
 			for(int b = 0;b<alienShip[i].getWeapon().length;b++)
