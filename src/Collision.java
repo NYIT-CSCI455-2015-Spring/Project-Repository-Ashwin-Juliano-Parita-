@@ -11,30 +11,38 @@ import java.awt.*;
 
 class Collision extends Thread {
 	
+	private Player player;						//Holds Player object values
 	private GalaxyBattle main;					//holds main frame values
 	private ShipFrame userShip = null;			//holds user ship's values
 	private Weapon[] userWeapon = null;			//holds user weapon's values
 	private ShipFrame[] alienShip = null;		//holds aliens ship's values
 	private Weapon[][] alienWeapon = null;		//holds aliens weapon's values
 	private final int MAX_AMMO;					//holds maximum possible ammo
+	private Level level;						//holds game level information
 	private final int PANEL_WIDTH;				//main frame dimensions
 	private final int PANEL_HEIGHT;				//main frame dimensions
+	private GameStatus statusPanel;				//holds statusPanel values
+	private StartMenuPanel lvlCmplt;			//start panel
 
 	/*--------------------------------------------------
 	|	Constructor													
-	|--------------------------------------------------*/
-	/*	This is used to initialize all  the  required	
+	|--------------------------------------------------
+	|	This is used to initialize all  the  required	
 	|	data needed to  run  the collision thread.		
 	---------------------------------------------------*/
-	Collision(GalaxyBattle t,ShipFrame s,ShipFrame[] a,int w,int h)
+	Collision(Player p,GalaxyBattle t,GameStatus gs,ShipFrame s,ShipFrame[] a,Level l,int w,int h,StartMenuPanel item)
 	{
+		player = p;
 		main = t;
+		statusPanel = gs;
 		userShip = s;
 		alienShip = a;
+		level = l;
 		loadWeapons();
 		MAX_AMMO = ShipFrame.MAX_AMMO;
 		PANEL_WIDTH = w;
 		PANEL_HEIGHT = h;
+		lvlCmplt = item;
 	}
 	
 	/*--------------------------------------------------
@@ -100,6 +108,8 @@ class Collision extends Thread {
 			&& (alienWeaponLocation.getY() >= userYLimit.getStart() && alienWeaponLocation.getY() <= userYLimit.getEnd()))
 		{
 				hit = true;
+				if(userShip.getLife()==1)
+				{lvlCmplt.gameOver();}
 		}
 		else
 		{
@@ -154,10 +164,15 @@ class Collision extends Thread {
 			if(hit)
 			{
 				System.out.println("Hit");
+				player.addScore(alienShip[alienIndex].getPoints());
 				userWeapon[shipWeaponIndex].setVisible(false);
 				userWeapon[shipWeaponIndex].killThread();
 				userShip.loadSlot(shipWeaponIndex);
 				alienShip[alienIndex].decreaseLife();
+				if(alienShip[alienIndex].getLife() == 0)
+				{
+					level.getProgress().increaseCounter();
+				}
 				try{sleep(userWeapon[shipWeaponIndex].getTime()*5);}catch(InterruptedException ie){}
 			}
 		}
@@ -165,19 +180,18 @@ class Collision extends Thread {
   
 	/*--------------------------------------------------
 	|	run method													 
-	|--------------------------------------------------*/
-	/*	This method uses all the prior methods in this	
+	|--------------------------------------------------
+	|	This method uses all the prior methods in this	
 	|	class in a while loop  to create a run time		
 	|	collision check by checking every weapon that	
 	|	has been shoot, alien's and user's location		
 	|	at every step. Loop will only end if player has	
 	|	killed every alien or died.													
 	---------------------------------------------------*/	
-	public void run()
+  public void run()
 	{
-			
-		System.out.println("Here");
-		while(alienShip.length != 0)
+	  System.out.println("Here");
+		while(level.getProgress().getCounter() != alienShip.length)
 		{	
 		
 			for(int wIndex = 0;wIndex<userWeapon.length; wIndex++)
@@ -196,13 +210,17 @@ class Collision extends Thread {
 			}
 			
 		}
-			
-		
+		level.advance();
+		if(level.getLevel()==3)
+		{level.setLevel(0);}
+		if(level.getDifficulty()>=0)
+		{lvlCmplt.levelComplete();
 		try
 			{
 				sleep(2000);
 			}catch(InterruptedException ex){}
-		main.runGame();
-		
+		}
+		lvlCmplt.removeAllItems();
+		main.runGame(level.getLevel());
 	}
 }

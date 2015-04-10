@@ -10,15 +10,13 @@ import java.io.*;
 public class GalaxyBattle extends JApplet {
 	
 	private Background mainPanel;						//The background panel
+	private StartMenuPanel menuPanel;					//The start menu
 	private ShipFrame userShip;							//The user ship
 	private ShipFrame[] alienShip;						//Array of ShipFrame to place the aliens in
 	
-<<<<<<< HEAD
-	private Image shipImg, galaxyImg, weaponImg, 		//Images
-	level_img;											
-=======
-	private Image shipImg, galaxyImg, weaponImg;		//Images
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
+	private Image shipImg, galaxyImg, weaponImg,		//Images		
+	start_btn, container_img, banner_img, quit_img, 
+	scores_img, level_img, gameover_img, scoreImg;
 	private Image[]alienImg;							//Array of images for the aliens
 	private Image[] explosionImgs;					    //Array of images for the explosion animation
 
@@ -27,7 +25,10 @@ public class GalaxyBattle extends JApplet {
     private final int HEIGHT = 500;						//Height of the game panel	
     
     private Level level;								//Level object to represent the level the user is on
-   
+    private Player userInfo;							//Player object to keep track of the player scores and info
+	private GameStatus statusPanel;						//The status panel that keeps track of everything
+	private AnimatedPanel scorePanel;					//The animated panel that animates the panel
+	
 	/*--------------------------------------------------
 	|	init()									        
 	|---------------------------------------------------
@@ -38,45 +39,27 @@ public class GalaxyBattle extends JApplet {
 	public void init()
 	{
 		loadMainObjects();
-		addUserShip();
 		runMainPanel();	
-<<<<<<< HEAD
-		runGame(1);
+		runMenuPanel();	
    }
 	
 	/*--------------------------------------------------
 	|	runGame(int level)									    
 	|--------------------------------------------------
 	|  Starts the game by loading the aliens in their   
-=======
-		runGame();
-   }
-	
-	/*--------------------------------------------------
-	|	runGame()									    
-	|--------------------------------------------------*/
-	/*  Starts the game by loading the aliens in their   
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 	|	starting position. Adds the user to the screen   
 	|	along with the aliens. Adds the menu to the 		 
 	|	screen and runs the simulation of the game.      
 	|--------------------------------------------------*/
-<<<<<<< HEAD
 	public void runGame(int lev)
 	{	
 		loadAllienShips(lev*4);
-		addUserShip();	
+		loadAllienShips(8+level.getDifficulty());
+		addUserShip();
+		statusPanel.refreshAll();
+		statusPanel.refreshLevel();
 		runCollisionCheck();
 		addAliens();
-		mainPanel.repaint();
-=======
-	public void runGame()
-	{		 
-		loadAllienShips(5);
-		addUserShip();	
-		runCollisionCheck();
-		addAliens();
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 	}
 	
 	/*-------------------------------------------------
@@ -91,13 +74,14 @@ public class GalaxyBattle extends JApplet {
 	{
 		loadImages();
 		loadMainPanel();
+		loadMenuPanel();
 		loadUser();
 	}
 	
 	/*--------------------------------------------------
 	|	runCollisionCheck()							          
-	|--------------------------------------------------*/
-	/* No parameter                                     
+	|--------------------------------------------------
+	| No parameter                                     
 	|									                     	 
 	|  Sets the collision to no null to kill previous	 
 	|	collision checks, creates a new collision and  	 
@@ -106,11 +90,7 @@ public class GalaxyBattle extends JApplet {
 	public void runCollisionCheck()
 	{
 		collision = null;
-<<<<<<< HEAD
-		collision = new Collision(this,userShip,alienShip,level,WIDTH,HEIGHT);
-=======
-		collision = new Collision(this,userShip,alienShip,WIDTH,HEIGHT);
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
+		collision = new Collision(userInfo,this,statusPanel,userShip,alienShip,level,WIDTH,HEIGHT,menuPanel);
 		collision.start();
 	}
 	
@@ -142,15 +122,74 @@ public class GalaxyBattle extends JApplet {
 	|--------------------------------------------------*/
 	public void loadImages()
 	{
+		scoreImg = loadImage("Images/scoreback.png");
+		galaxyImg = loadImage("Images/space.png");
 		shipImg = loadImage("Images/spaceship.png");
 		weaponImg = loadImage("Images/beam.png");
-		galaxyImg = loadImage("Images/space.png");
-		alienImg = new Image[]{loadImage("Images/alien.png")};
-<<<<<<< HEAD
+		alienImg = new Image[]{loadImage("Images/alien.png"),loadImage("Images/alien2.png"),loadImage("Images/alien3.png")};
+		
+		start_btn = loadImage("Images/start_btn.png");
+		quit_img = loadImage("Images/quit_img.png");
+		container_img = loadImage("Images/btn_container.png");
+		banner_img = loadImage("Images/game_banner.png");
+		scores_img = loadImage("Images/scores.png");
 		level_img = loadImage("Images/levelup.png");
-=======
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
+		gameover_img = loadImage("Images/go.png");
 		loadExplosionImages();
+	}
+	
+	/*--------------------------------------------------
+	|	loadScoresPanel()									       
+	|--------------------------------------------------
+	| No Parameters                                    
+	|									                     	 
+	|  Creates an score panel to display the high       
+	|  scores and adds it to the main panel.		       
+	|--------------------------------------------------*/
+	public void loadScoresPanel()
+	{
+		if(scorePanel == null)
+		{
+			scorePanel = new AnimatedPanel(scoreImg,400,400,10,10);
+		}
+		menuPanel.add(scorePanel);
+	}
+	
+	/*--------------------------------------------------
+	|	openScores(boolean clicked)							 
+	|--------------------------------------------------
+	| Takes in a boolean as theparameter               
+	|									                     	 
+	|  When the the scores button is cliked it displays 
+	|	the high scores of the game. Else closes it		 
+	|--------------------------------------------------*/
+	public void openScores(boolean clicked)
+	{
+		if(!clicked)
+		{
+			loadScoresPanel();
+			loadScoresPanel();
+			scorePanel.animate();
+			scorePanel.setVisible(true);
+		}
+		else
+		{
+			closeScores();
+		}
+	}
+	
+	/*--------------------------------------------------
+	|	closeScores()							                
+	|--------------------------------------------------
+	| No parameter                                     
+	|									                     	 
+	|  Sets the visibility of the score panel to false  
+	|	and closes it                              		 
+	|--------------------------------------------------*/
+	public void closeScores()
+	{
+		scorePanel.setVisible(false);
+		scorePanel = null;
 	}
 
 	/*--------------------------------------------------
@@ -168,6 +207,19 @@ public class GalaxyBattle extends JApplet {
 	}
 	
 	/*--------------------------------------------------
+	|	loadMenuPanel()							             
+	|--------------------------------------------------
+	| No parameter                                     
+	|									                     	 
+	|  Loads the menu prior to the game's beggining     
+	|--------------------------------------------------*/
+	public void loadMenuPanel()
+	{
+		menuPanel = new StartMenuPanel(start_btn, quit_img, scores_img, container_img, banner_img,level_img,gameover_img,
+												 WIDTH,HEIGHT,this);
+	}
+	
+	/*--------------------------------------------------
 	|	loadUser()							                   
 	----------------------------------------------------
 	| No parameter                                     
@@ -180,15 +232,18 @@ public class GalaxyBattle extends JApplet {
 	{
 		int life = 5;
 		int ammo = 1;
+		int points = 30;
 		AxisLimit x = new AxisLimit(20,WIDTH-70);
 		AxisLimit y = new AxisLimit(HEIGHT-100,HEIGHT-50);
-		userShip = new ShipFrame(shipImg,life,ammo,true,weaponImg,(WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT,explosionImgs);
+		userShip = new ShipFrame(shipImg,life,points,ammo,true,weaponImg,(WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT,explosionImgs);
 		userShip.getWeapon(0).setTime(12);
 		userShip.getWeapon(1).setTime(12);
-		userShip.getWeapon(2).setTime(12);
+		userShip.getWeapon(2).setTime(12);				
 		level = null;
 		level = new Level(alienShip);
 		level.setLevel(0);
+		
+		userInfo = new Player("Java",userShip,level);
 	}
 	
 	/*--------------------------------------------------
@@ -205,6 +260,7 @@ public class GalaxyBattle extends JApplet {
 		alienShip = null;
 		alienShip = new ShipFrame[length];
 		int life = 1;
+		int points = 30;
 		int ammo = 1;
 		int init_x = 400 + level.getLevel()*10;
 		int init_y = 100 + level.getLevel()*10;
@@ -213,38 +269,11 @@ public class GalaxyBattle extends JApplet {
 		
 		for(int i = 0; i< alienShip.length;i++)
 		{
-			alienShip[i] = new ShipFrame(alienImg[0],life,ammo,false,weaponImg,init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
+			alienShip[i] = new ShipFrame(alienImg[0],life,points,ammo,false,weaponImg,init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
 			init_x = init_x + 60;
 		}
 		
 		System.out.println("Here");
-	}
-	
-	/*--------------------------------------------------
-	|	loadAllienShips(int length)							 
-	|--------------------------------------------------*/
-	/* Takes in an int as a parameter                   
-	|									                     	 
-	|  Loads all of the alien ships with their settings 
-	|	such as life, how many points they are worth,    
-	|	their ammo and initial position.					    
-	|--------------------------------------------------*/
-	public void loadAllienShips(int length)
-	{
-		alienShip = null;
-		alienShip = new ShipFrame[length];
-		int life = 1;
-		int ammo = 1;
-		int init_x = 400;
-		int init_y = 100;
-		AxisLimit x = new AxisLimit(0,1200);
-		AxisLimit y = new AxisLimit(0,1200);
-		
-		for(int i = 0; i< alienShip.length;i++)
-		{
-			alienShip[i] = new ShipFrame(alienImg[0],life,ammo,false,weaponImg,init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
-			init_x = init_x + 60;
-		}
 	}
 	
 	/*--------------------------------------------------
@@ -270,12 +299,8 @@ public class GalaxyBattle extends JApplet {
 	/* Adds all the aliens to the screen                
 	|--------------------------------------------------*/
 	public void addAliens()
-<<<<<<< HEAD
 	{ 		
 		System.out.println("Adding Aliens");
-=======
-	{ 			
->>>>>>> 19dd2099d4d0f2e2f70345407d6f203cf8902fea
 		for(int i = 0; i<alienShip.length;i++)
 		{
 			for(int b = 0;b<alienShip[i].getWeapon().length;b++)
@@ -284,6 +309,20 @@ public class GalaxyBattle extends JApplet {
 				mainPanel.add(alienShip[i].getWeapon()[b]);
 			}
 		}         
+	}
+	
+	/*--------------------------------------------------
+	|	statusBar()									             
+	|--------------------------------------------------
+	| No Parameters                                    
+	|									                     	 
+	|  Creates a statusPanel and adds it to the main	 	
+	|	panel			      										 
+	|--------------------------------------------------*/
+	public void statusBar()
+	{
+		statusPanel = new GameStatus(level,userInfo,10,10);
+		mainPanel.add(statusPanel);
 	}
 	
 	/*--------------------------------------------------
@@ -301,6 +340,20 @@ public class GalaxyBattle extends JApplet {
         setSize(WIDTH,HEIGHT);
         setLayout(new BorderLayout());
 		getContentPane().add(mainPanel,BorderLayout.CENTER);
+	}
+	
+	/*--------------------------------------------------
+	|	runMenuPanel()							                
+	|--------------------------------------------------
+	| No parameter                                     
+	|									                     	 
+	|  Adds the menu to the screen in an animated       
+	|  fashion                                          
+	|--------------------------------------------------*/
+	public void runMenuPanel()
+	{
+		mainPanel.add(menuPanel);
+		menuPanel.animate();
 	}
 	
 	

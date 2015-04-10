@@ -6,6 +6,7 @@
 
 import javax.swing.*;
 
+import java.applet.AudioClip;
 import java.awt.*;
 
 class ShipFrame extends JPanel{
@@ -15,6 +16,7 @@ class ShipFrame extends JPanel{
 	
 	private Image shipImg;						//Holds ship image to be drawn in this panel
 	private int life;							//Amount of hits it can take
+	private int points;							//Holds amount of score given after death
 	private boolean dead = false;				//if false means it is still alive
 
 	private final int WIDTH = 40;				//This panel width
@@ -46,15 +48,15 @@ class ShipFrame extends JPanel{
 	|	layout to null, opaque value to false, and 		
 	|	visibility to true.   									
 	|--------------------------------------------------*/
-	ShipFrame(Image sI, int shipLife, int shipAmmo, boolean d, Image bI, int initialX,int initialY, 
-			AxisLimit x, AxisLimit y,int mainPanelWidth, int mainPanelHeight, Image[] explo)
+	ShipFrame(Image sI,int shipLife,int p, int shipAmmo, boolean d, Image bI,
+				int initialX,int initialY, AxisLimit x, AxisLimit y, int mainPanelWidth, 
+				int mainPanelHeight, Image[] explo)
    {
 		shipImg = sI;
 		beamImg = bI;
 		
 		xbound = x;
 		ybound = y;
-		
 		MAIN_PANEL_WIDTH = mainPanelWidth;
 		MAIN_PANEL_HEIGHT = mainPanelHeight;
 		
@@ -62,6 +64,7 @@ class ShipFrame extends JPanel{
 		INIT_SHIPLOCATION_Y = initialY;
 		
 		life = shipLife;
+		points = p;
 		weapon = new Weapon[MAX_AMMO];
 		ammo = shipAmmo;
 		direction = d;
@@ -234,6 +237,27 @@ class ShipFrame extends JPanel{
 	public int getAmmo()
 	{
 		return ammo;
+	}
+	
+	/*--------------------------------------------------
+	|	Points Assessor											 
+	|--------------------------------------------------
+	|	This method returns quantity of points that the 
+	|	ship is worth after being killed						
+	---------------------------------------------------*/
+	public int getPoints()
+	{
+		return points;
+	}
+	/*--------------------------------------------------
+	|	Points Modifier											 
+	|--------------------------------------------------
+	|	This method replace the current points to the one
+	|	being passed.												 
+	---------------------------------------------------*/
+	public void setPoints(int p)
+	{
+		points = p;
 	}
 
 	/*--------------------------------------------------
