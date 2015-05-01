@@ -1,3 +1,4 @@
+
 /* ------------------------------------------------------------------											      
 |Basic Information: This class extends  from JPanel and implements   
 |						  Runnable					                           
@@ -45,7 +46,7 @@ class StartMenuPanel extends JPanel implements Runnable
 		bannerWidth     = 800;													// Width of the game banner
 		bannerHeight    = 150;													// Height of the banner 
 		containerWidth  = 300;													// Width of the container
-		containerHeight = 140;													// Height of the container
+		containerHeight = 70;													// Height of the container
 		
 		bannerx = new AxisLimit(-bannerWidth,135);					   			// x-axis limit
 		bannery = new AxisLimit(200,100);										// y-axis limit
@@ -60,7 +61,7 @@ class StartMenuPanel extends JPanel implements Runnable
 		// SCORES button configuration
 		//scoresButton = new StartMenuItem( scores_img, 150, 45, 80, 75);
 		levelComplete = new StartMenuItem( level_img, 1000, 150, 290, 100);
-		gameOver = new StartMenuItem( gameover_img, 1000, 150, 425, 100);
+		gameOver = new StartMenuItem( gameover_img, 1000, 150, 310, 100);
 		
 		// Addition of elements to the panel
 		button_container.addMouseListener(new MenuMouseListener(main,this));
@@ -157,8 +158,8 @@ class StartMenuPanel extends JPanel implements Runnable
 	{
 		// Configure visibility
 		gameOver.setVisible(true);
-		startButton.setVisible(true);				  
-		//quitButton.setVisible(true);			  // Component not utilized
+                //button_container.setVisible(true);
+		//startButton.setVisible(true);			  // Component not utilized
 	}
 
    /*------------------------------------------

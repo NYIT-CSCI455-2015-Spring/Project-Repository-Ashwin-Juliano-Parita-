@@ -1,3 +1,4 @@
+
 /* ------------------------------------------------------------------
 |Basic Information: This class extends  from JPanel				                  
 |Purpose: 			  The purpose of this class is to create and panel 
@@ -37,6 +38,9 @@ class ShipFrame extends JPanel{
 	private int ammoIndex;							//Which weapon to be used
 	private int ammo;								//current ammo limit
 	private boolean direction = true;
+        
+        private AudioClip shootingClip;                                 //clip to be played when shooting occurs
+	private AudioClip explosionClip;				//clip to be played when ship explodes
 	
 	private Animation explosion;					//manipulates the explosion animation
 
@@ -48,7 +52,7 @@ class ShipFrame extends JPanel{
 	|	layout to null, opaque value to false, and 		
 	|	visibility to true.   									
 	|--------------------------------------------------*/
-	ShipFrame(Image sI,int shipLife,int p, int shipAmmo, boolean d, Image bI,
+	ShipFrame(Image sI,int shipLife,int p, int shipAmmo, boolean d, Image bI,AudioClip exploClip,AudioClip weaponClip,
 				int initialX,int initialY, AxisLimit x, AxisLimit y, int mainPanelWidth, 
 				int mainPanelHeight, Image[] explo)
    {
@@ -75,6 +79,8 @@ class ShipFrame extends JPanel{
 		ammoIndex = 0;
 		ammo = 3;
 		
+                explosionClip = exploClip;
+		shootingClip = weaponClip;
 		explosion = new Animation(explo,20);
 		
 		slotLocations = new Point[3];
@@ -111,6 +117,7 @@ class ShipFrame extends JPanel{
 		if(life == 0)
 		{
 			dead = true;
+                        explosionClip.play();
 			this.repaint();
 			this.add(explosion);
 			explosion.startAnimation();
@@ -328,7 +335,7 @@ class ShipFrame extends JPanel{
 	private void loadWeapon() {
 		for(int i =0; i<weapon.length;i++)
 		{
-			weapon[i] = new Weapon(beamImg,direction,AMMO_SLOTS[i%AMMO_SLOTS.length],MAIN_PANEL_HEIGHT);
+			weapon[i] = new Weapon(beamImg,shootingClip,direction,AMMO_SLOTS[i%AMMO_SLOTS.length],MAIN_PANEL_HEIGHT);
 		}
 	}
 	

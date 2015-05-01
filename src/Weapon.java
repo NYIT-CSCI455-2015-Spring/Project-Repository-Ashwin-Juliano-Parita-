@@ -1,3 +1,4 @@
+
 /* ------------------------------------------------------------------												      
 |Basic Information: This class extends  from JPanel and implements   
 |						  Runnable					                           
@@ -14,6 +15,7 @@ import java.applet.*;
 class Weapon extends JPanel implements Runnable{
 	
 	// Instance variables
+        private AudioClip shootingClip;							// Audio clip for shots
 	private Image img;											// Beam image. 
 	private int pause =20;										// Pause between beam moves (in milliseconds)
 	private final int PAUSE_MAX = 100;						// Maximum pause you can set
@@ -50,14 +52,15 @@ class Weapon extends JPanel implements Runnable{
 	|	to null,focusable,opaque value to false, and 	
 	|	visible to false.   										
 	|-------------------------------------------------*/
-	Weapon(Image i, boolean d,String s,int ybound) 
+	Weapon(Image i, AudioClip clip, boolean d,String s,int ybound) 
 	{
 		img = i;														// Sets image to i
-		direction = d;												// Sets the direction to the direction passed
+		direction = d;                                                                                                  // Sets the direction to the direction passed
 		slot = s;													// Sets the number of slots
 		YBOUND = ybound;											// Sets the y-boundry
 		thread = null;												// Initializes the thread to null
-					
+		shootingClip = clip;
+                
 		setSize(WIDTH,HEIGHT);									// Sets  the  weapons  panel  size
 		setOpaque(false);											// Does not draw any background			
 	   setLayout(null);											// set layout to none
@@ -280,6 +283,7 @@ class Weapon extends JPanel implements Runnable{
 			thread.start();
 			moving = true;
 			setVisible(true);
+                        shootingClip.play();
 		}
 	}
 	

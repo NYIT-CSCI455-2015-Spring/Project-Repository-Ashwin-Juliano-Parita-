@@ -23,6 +23,7 @@ class Collision extends Thread {
 	private final int PANEL_HEIGHT;				//main frame dimensions
 	private GameStatus statusPanel;				//holds statusPanel values
 	private StartMenuPanel lvlCmplt;			//start panel
+        private AlienSimulation sim;
 
 	/*--------------------------------------------------
 	|	Constructor													
@@ -30,7 +31,8 @@ class Collision extends Thread {
 	|	This is used to initialize all  the  required	
 	|	data needed to  run  the collision thread.		
 	---------------------------------------------------*/
-	Collision(Player p,GalaxyBattle t,GameStatus gs,ShipFrame s,ShipFrame[] a,Level l,int w,int h,StartMenuPanel item)
+	Collision(Player p,GalaxyBattle t,GameStatus gs,ShipFrame s,ShipFrame[] a,Level l,int w,int h,StartMenuPanel item, 
+                AlienSimulation alienSimulation)
 	{
 		player = p;
 		main = t;
@@ -43,6 +45,7 @@ class Collision extends Thread {
 		PANEL_WIDTH = w;
 		PANEL_HEIGHT = h;
 		lvlCmplt = item;
+                sim = alienSimulation;
 	}
 	
 	/*--------------------------------------------------
@@ -81,6 +84,15 @@ class Collision extends Thread {
 				alienWeapon[alienShipIndex][alienWeaponIndex].killThread();
 				alienShip[alienShipIndex].loadSlot(alienWeaponIndex);
 				userShip.decreaseLife();
+                                if(userShip.getLife()==0)
+                                    {
+                                        lvlCmplt.gameOver();
+                                        for (ShipFrame x : alienShip)
+                                        {
+                                            x.decreaseLife();
+                                        }
+                                    }
+				statusPanel.refreshLife();
 				try{sleep(alienWeapon[alienShipIndex][alienWeaponIndex].getTime()*5);}catch(InterruptedException ie){}				
 			}
 		}
@@ -101,15 +113,13 @@ class Collision extends Thread {
 		AxisLimit userXLimit = new AxisLimit(userShip.getX(),userShip.getX()+userShip.getWidth());
 		AxisLimit userYLimit = new AxisLimit(userShip.getY()-userShip.getHeight(),userShip.getY());
 		Point alienWeaponLocation = new Point(alienWeapon[alienShipIndex][alienWeaponIndex].getX()
-														,alienWeapon[alienShipIndex][alienWeaponIndex].getY());
+						,alienWeapon[alienShipIndex][alienWeaponIndex].getY());
 		
 
 		if((alienWeaponLocation.getX() >= userXLimit.getStart() && alienWeaponLocation.getX() <= userXLimit.getEnd()) 
 			&& (alienWeaponLocation.getY() >= userYLimit.getStart() && alienWeaponLocation.getY() <= userYLimit.getEnd()))
 		{
 				hit = true;
-				if(userShip.getLife()==1)
-				{lvlCmplt.gameOver();}
 		}
 		else
 		{
@@ -172,6 +182,10 @@ class Collision extends Thread {
 				if(alienShip[alienIndex].getLife() == 0)
 				{
 					level.getProgress().increaseCounter();
+                                        player.addScore(alienShip[alienIndex].getPoints());
+					player.increaseKills();
+					statusPanel.refreshScore();
+					statusPanel.refreshKills();
 				}
 				try{sleep(userWeapon[shipWeaponIndex].getTime()*5);}catch(InterruptedException ie){}
 			}

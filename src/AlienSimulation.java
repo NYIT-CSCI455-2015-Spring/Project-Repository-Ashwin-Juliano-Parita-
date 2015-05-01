@@ -48,11 +48,11 @@ class AlienSimulation extends Thread {
 		difficulty = dif.getDifficulty();
 	}
 	
-	/*--------------------------------------------------
-	|	simulationOne(int,int)									 |
+        /*--------------------------------------------------
+	|	simulationOne(int,int)									 
 	|--------------------------------------------------
 	| The parameters for this function are int, int.   
-	|									                     	 |
+	|									                     	 
 	|	The First int type data determines the speed in  
 	|	which the alien will move                        
 	|	The seccond int type date will determine the     
@@ -126,22 +126,194 @@ class AlienSimulation extends Thread {
 		}
 	}
 	
+	/*--------------------------------------------------
+	|	simulationTwo(int,int)									 
+	|--------------------------------------------------
+	|   The parameters for this function are int, int.   								                     	 
+	|	The First int type data determines the speed in  
+	|	which the alien will move                        
+	|	The seccond int type date will determine the     
+	|	frequency in which the alien will shoot.	    
+	|--------------------------------------------------*/
+	public void simulationTwo(int alienSpeed, int shootFrequency)
+	{	
+		//Declare all the variables that will be used in the function
+		boolean left = false;
+		boolean right = false;
+		boolean up = false;
+		boolean down = false;
+		
+		//For all aliens in the array.
+		for(int i = aliens.length-1;i>=0;i--)
+		{
+			try
+			{
+				sleep(5);
+				/*If the current alien x axis is 60 pixels the right-most limit of the game frame.
+				  Set right to false and down to true*/
+				if(aliens[i].getX() >= PANEL_WIDTH-(aliens[i].getWidth()+20))
+				{
+					right = false;
+					down = true;
+				}
+				/*If the current alien x axis is 10 pixels the left-most limit of the game frame.
+				  Set left to false and up to true*/
+				if(aliens[i].getX() <= 30)
+				{
+					left=false;
+					up = true;
+				}
+				
+				/*If the current alien y axis is greater than the game's frame height devide by 3,
+				  Set left to true and down to false*/
+				if(aliens[i].getY() >= PANEL_HEIGHT/3)
+				{
+					down = false;
+					left = true;
+				}
+				
+				/*If the current alien y axis is less than 60 pixels from the game's frame y axis.
+				  Set up to false and right to true*/
+				if(aliens[i].getY() <= 60)
+				{
+					up = false;
+					right = true;
+				}
+				
+				//If left is set to true move the alien to the left.
+				if(left)
+				{
+					aliens[i].moveLeft(alienSpeed);	
+				}
+				//If right is set to true move the alien to the right.
+				if(right)
+				{
+					aliens[i].moveRight(alienSpeed);
+				}
+				//If up is set to true move the alien up.
+				if(up)
+				{	
+					aliens[i].moveUp(alienSpeed);
+				}
+				//If down is set to true, move alien down.
+				if(down)
+				{
+					aliens[i].moveDown(alienSpeed);
+				}
+				/*If the alien is alive and the alien is visible to the player and it is within the
+			     shootFrequency distace from the ship. The alien at the current index can shoot.*/
+				if(aliens[i].getLife()!=0 && aliens[i].getX()-ship.getX() <= shootFrequency
+												  && aliens[i].getX()-ship.getX() >= -shootFrequency
+												  && aliens[randomIndex].getX()<1000)
+				{
+					aliens[i].shootWeapon();
+				}
+			}catch(InterruptedException ie){}
+		}
+	}
 	
 	/*--------------------------------------------------
-	|	initialPosition(int)									    |
+	|	simulationThree(int,int)									 
+	|--------------------------------------------------
+	| The parameters for this function are int, int.   
+	|									                     	 
+	|	The First int type data determines the speed in  
+	|	which the alien will move                        
+	|	The seccond int type date will determine the     
+	|	frequency in which the alien will shoot.	   	 
+	|--------------------------------------------------*/
+	public void simulationThree(int alienSpeed, int shootFrequency)
+	{	
+		//Declare all the variables that will be used in the function
+		boolean left = false;
+		boolean right = false;
+		boolean up = false;
+		boolean down = false;
+	//For all aliens in the array.
+		for(int i = aliens.length-1;i>=0;i--)
+		{
+			try
+			{
+				sleep(5);
+				/*If the current alien x axis is 60 pixels the right-most limit of the game frame.
+				  Set right to false and down to true*/
+				if(aliens[i].getX() >= PANEL_WIDTH-(aliens[i].getWidth()+20))
+				{
+					right = false;
+					up = true;
+				}
+				/*If the current alien x axis is 10 pixels the left-most limit of the game frame.
+				  Set left to false and up to true*/
+				if(aliens[i].getX() <= 30)
+				{
+					left=false;
+					down = true;
+				}
+				
+				/*If the current alien y axis is greater than the game's frame height devide by 3,
+				  Set left to true and down to false*/
+				if(aliens[i].getY() >= PANEL_HEIGHT/3)
+				{
+					down = false;
+					right = true;
+				}
+				
+				/*If the current alien y axis is less than 60 pixels from the game's frame y axis.
+				  Set up to false and right to true*/
+				if(aliens[i].getY() <= 60)
+				{
+					up = false;
+					left = true;
+				}
+				
+				//If left is set to true move the alien to the left.
+				if(left)
+				{
+					aliens[i].moveLeft(alienSpeed);	
+				}
+				//If right is set to true move the alien to the right.
+				if(right)
+				{
+					aliens[i].moveRight(alienSpeed);
+				}
+				//If up is set to true move the alien up.
+				if(up)
+				{	
+					aliens[i].moveUp(alienSpeed);
+				}
+				//If down is set to true, move alien down.
+				if(down)
+				{
+					aliens[i].moveDown(alienSpeed);
+				}
+				/*If the alien is alive and the alien is visible to the player and it is within the
+			     shootFrequency distace from the ship. The alien at the current index can shoot.*/
+				if(aliens[i].getLife()!=0 && aliens[i].getX()-ship.getX() <= shootFrequency
+												  && aliens[i].getX()-ship.getX() >= -shootFrequency
+												  && aliens[randomIndex].getX()<1000)
+				{
+					aliens[i].shootWeapon();
+				}
+			}catch(InterruptedException ie){}
+		}
+	}
+
+	/*--------------------------------------------------
+	|	initialPosition(int)									    
 	|--------------------------------------------------
 	| The parameters for this function are int.        
-	|									                     	 |
+	|									                     	 
 	|	The int type data is the simulation the the		 
 	|  the alien should have prior to the beginnig      
-   |	of the level.	   	 
+   |	of the level. Each simulation requires a diffrent
+	|	initial postion. This function loads the aliens  
+	|	according to the simulation of the level	   	 
 	|--------------------------------------------------*/
 	public void initialPosition(int option)
 	{
-		
-
+            
 		//If the option is 0.
-		
+		//Load the "BLOCK" simulation.(Simulation One)
 		if(option == 0)
 		{
 			for(int i = 0; i< aliens.length;i++)
@@ -182,8 +354,27 @@ class AlienSimulation extends Thread {
 			}
 		}
 		
+		//If the option is 1.
+		//Load the "Left" simulation.(Simulation Three)
+		if(option == 1)
+		{
+			for(int i = 0; i< aliens.length;i++)
+			{
+				aliens[i].setLocation(0-(i*60+aliens[i].getX()),aliens[i].getY()); 
+			}
+		}
+		
+		//If the option is 2.
+		//Load the "RIGHT" simulation.(Simulation Two)
+		if(option == 2)
+		{
+			for(int i = 0; i< aliens.length;i++)
+			{
+				aliens[i].setLocation((i*60+1000)-aliens[i].getX()+190,aliens[i].getY()); 
+			}
+		}
 	
-	}
+	} 
 
 	//The task given to the thread when it is invoked with the start method.
 	//Depending of the level passed to the object call the animation that 
@@ -191,13 +382,19 @@ class AlienSimulation extends Thread {
 	public void run()
 	{
 		System.out.println(aliens.length);
-		initialPosition(0);            //Load the aliens to have the correct initail position for the simulation of the level
+		initialPosition(level);            //Load the aliens to have the correct initail position for the simulation of the level
 		
 		while(true)
 		{
-
-			simulationOne(1+difficulty,50+difficulty*2);  //Difficulty increases every level.
-		}
-
+				switch(level){
+					case -1:simulationOne(5,50);									//Only happens once.
+								break;
+					case 0: simulationOne(1+difficulty,50+difficulty*2);  //Difficulty increases every level.
+								break;
+					case 1: simulationThree(5+difficulty,difficulty);		//Difficulty increases every level.
+								break;
+					case 2: simulationTwo(5+difficulty,difficulty);			//Difficulty increases every level.
+								break;}
+						}
 	}
 }

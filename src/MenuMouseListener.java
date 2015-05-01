@@ -1,3 +1,4 @@
+
 /* ------------------------------------------------------------------											      
 |Basic Information: This class does not extend anything but          
 |						  implements MouseListener									
@@ -30,7 +31,7 @@ class MenuMouseListener implements MouseListener
 		{
 			menuPanel    = mPanel;								// MenuPanel object
 			startButton  = menuPanel.getStartButton();			// Assigns the start button from start panel
-			scoresButton = menuPanel.getScoresButton();  		// Assigns the score button from start panel
+			//scoresButton = menuPanel.getScoresButton();  		// Assigns the score button from start panel
 			main 			 = g;								// Assigns a Galaxy object to main
 			scoreClicked = false;								// Initialize score clicked to false 
 		}
@@ -56,7 +57,7 @@ class MenuMouseListener implements MouseListener
 				
 				menuPanel.removeAllItems();						// Removes start menu items
 				main.statusBar();								// Starts the status bar 
-				main.runGame(1);								// Iniitializes the game
+				main.runGame(0);								// Iniitializes the game
 			}
 			else if(mx > scoresButton.getX() && mx < scoresButton.getX()+scoresButton.getWidth() &&
 					my > scoresButton.getY() && my < scoresButton.getY()+scoresButton.getHeight() )
@@ -77,4 +78,4 @@ class MenuMouseListener implements MouseListener
 		public void mouseEntered(MouseEvent e) {}		 
 		public void mouseExited(MouseEvent e) {}	
 		public void mouseReleased(MouseEvent e) {}			  
-}
+  }

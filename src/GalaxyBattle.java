@@ -1,3 +1,5 @@
+
+import java.applet.AudioClip;
 import javax.swing.*;
 
 import java.awt.*;
@@ -22,13 +24,18 @@ public class GalaxyBattle extends JApplet {
 	private AlienSimulation alienSimulation;		//Simulation object to handle the simulation of the aliens
 
 	private Collision collision;						//Collision object to check for the collided objects
-    private final int WIDTH = 1000;						//Width of the game panel
-    private final int HEIGHT = 500;						//Height of the game panel	
+        private final int WIDTH = 1000;						//Width of the game panel
+        private final int HEIGHT = 500;						//Height of the game panel	
     
-    private Level level;								//Level object to represent the level the user is on
-    private Player userInfo;							//Player object to keep track of the player scores and info
+        private Level level;								//Level object to represent the level the user is on
+        private Player userInfo;							//Player object to keep track of the player scores and info
 	private GameStatus statusPanel;						//The status panel that keeps track of everything
 	private AnimatedPanel scorePanel;					//The animated panel that animates the panel
+	
+        private AudioClip backgroundClip;				//The sound of the game
+	private AudioClip weaponClip;						//The laser sound when a weapon is fired
+	private AudioClip explosionClip;					//The explosion sound
+	private AudioClip[] levelClip;					//Array of audio to pass to the level class
 	
 	/*--------------------------------------------------
 	|	init()									        
@@ -74,6 +81,7 @@ public class GalaxyBattle extends JApplet {
 	public void loadMainObjects()
 	{
 		loadImages();
+                loadSongs();
 		loadMainPanel();
 		loadMenuPanel();
 		loadUser();
@@ -107,7 +115,7 @@ public class GalaxyBattle extends JApplet {
 	public void runCollisionCheck()
 	{
 		collision = null;
-		collision = new Collision(userInfo,this,statusPanel,userShip,alienShip,level,WIDTH,HEIGHT,menuPanel);
+		collision = new Collision(userInfo,this,statusPanel,userShip,alienShip,level,WIDTH,HEIGHT,menuPanel, alienSimulation);
 		collision.start();
 	}
 	
@@ -153,6 +161,20 @@ public class GalaxyBattle extends JApplet {
 		level_img = loadImage("Images/levelup.png");
 		gameover_img = loadImage("Images/go.png");
 		loadExplosionImages();
+	}
+        
+        /*--------------------------------------------------
+	|	loadSongs()							                   
+	|--------------------------------------------------
+	| No parameter                                     
+	|									                     	 
+	|  Loads the songs neccesarry to create the game    
+	|--------------------------------------------------*/
+	public void loadSongs()
+	{
+		backgroundClip = loadSong("songs/lvl.wav");
+		weaponClip = loadSong("songs/laser.wav");
+		explosionClip = loadSong("songs/explosion.wav");
 	}
 	
 	/*--------------------------------------------------
@@ -220,7 +242,7 @@ public class GalaxyBattle extends JApplet {
 	|--------------------------------------------------*/
 	public void loadMainPanel()
 	{
-		mainPanel = new Background(galaxyImg, WIDTH,HEIGHT);
+		mainPanel = new Background(galaxyImg,backgroundClip, WIDTH,HEIGHT);
 	}
 	
 	/*--------------------------------------------------
@@ -252,12 +274,13 @@ public class GalaxyBattle extends JApplet {
 		int points = 30;
 		AxisLimit x = new AxisLimit(20,WIDTH-70);
 		AxisLimit y = new AxisLimit(HEIGHT-100,HEIGHT-50);
-		userShip = new ShipFrame(shipImg,life,points,ammo,true,weaponImg,(WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT,explosionImgs);
+		userShip = new ShipFrame(shipImg,life,points,ammo,true,weaponImg,explosionClip,weaponClip,
+                                            (WIDTH/2),y.getEnd(),x,y,WIDTH,HEIGHT,explosionImgs);
 		userShip.getWeapon(0).setTime(12);
 		userShip.getWeapon(1).setTime(12);
 		userShip.getWeapon(2).setTime(12);				
 		level = null;
-		level = new Level(alienShip);
+		level = new Level(alienShip,levelClip);
 		level.setLevel(0);
 		
 		userInfo = new Player("Java",userShip,level);
@@ -279,15 +302,15 @@ public class GalaxyBattle extends JApplet {
 		int life = 1;
 		int points = 30;
 		int ammo = 1;
-		int init_x = 400 + level.getLevel()*10;
-		int init_y = 100 + level.getLevel()*10;
+		int init_x = 100;
+		int init_y = 100;
 		AxisLimit x = new AxisLimit(0,1200);
 		AxisLimit y = new AxisLimit(0,1200);
 		
 		for(int i = 0; i< alienShip.length;i++)
 		{
-			alienShip[i] = new ShipFrame(alienImg[0],life,points,ammo,false,weaponImg,init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
-			init_x = init_x + 60;
+			alienShip[i] = new ShipFrame(alienImg[i%3],life,points,ammo,false,weaponImg,explosionClip,weaponClip,
+                                init_x,init_y,x,y,WIDTH,HEIGHT,explosionImgs);
 		}
 		
 		System.out.println("Here");
@@ -354,9 +377,10 @@ public class GalaxyBattle extends JApplet {
 	public void runMainPanel()
 	{
 		mainPanel.addKeyListener(new MyKeyListener(userShip));
-        setSize(WIDTH,HEIGHT);
-        setLayout(new BorderLayout());
+                setSize(WIDTH,HEIGHT);
+                setLayout(new BorderLayout());
 		getContentPane().add(mainPanel,BorderLayout.CENTER);
+                mainPanel.playAudio();
 	}
 	
 	/*--------------------------------------------------
@@ -384,21 +408,40 @@ public class GalaxyBattle extends JApplet {
 	|--------------------------------------------------*/
 	public Image loadImage(String p) 
 	{
-       Image i = null;
-       try{
-	       i = ImageIO.read(new URL(getCodeBase(),p));
-       }
-       catch(MalformedURLException ex){
- 	      System.out.print(ex.getCause());
-       }
-       catch(IOException ex){
-               System.out.print(ex.getCause());
-       }
-       finally {
-           System.out.println("Image Path: "+p+" - Loaded.");
-       }
-       return i;
-  }
+            Image i = null;
+            try{
+                    i = ImageIO.read(new URL(getCodeBase(),p));
+            }
+            catch(MalformedURLException ex){
+                   System.out.print(ex.getCause());
+            }
+            catch(IOException ex){
+                    System.out.print(ex.getCause());
+            }
+            finally {
+                System.out.println("Image Path: "+p+" - Loaded.");
+            }
+            return i;
+        }
+        
+         /*--------------------------------------------------
+	|	loadSong(string p)							          
+	|--------------------------------------------------
+	| Takes in a string p                              
+	|									                     	 
+	|  Loads the songs to be used in an applet by       
+	|	getting the code base.                           
+	|--------------------------------------------------*/
+        public AudioClip loadSong(String p) 
+        {
+             AudioClip i = null;
+             try{
+                     i = getAudioClip(getCodeBase(),p);
+             }
+             finally {
+                 System.out.println("Song Path: "+p+" - Loaded.");
+             }
+                      return i;
+        }  
 	
 }
-

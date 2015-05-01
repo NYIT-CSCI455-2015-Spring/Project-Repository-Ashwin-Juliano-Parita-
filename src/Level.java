@@ -1,3 +1,4 @@
+
 /* ------------------------------------------------------------------										      
 |Basic Information: This class does not extend or implement anything 
 |																							
@@ -16,7 +17,7 @@ class Level
 	private LevelProgress progress;
 	
 	private ShipFrame[] aliens;
-	
+	private AudioClip[]levelSongs;
 	/*--------------------------------------------------
 	|	CONSTRUCTOR													 
 	|--------------------------------------------------
@@ -27,7 +28,7 @@ class Level
 	|	0, set the difficulty to 1 and the scoreBase to 
 	|	0.															   
 	|--------------------------------------------------*/
-	Level(ShipFrame[] a)
+	Level(ShipFrame[] a,AudioClip[] audio)
 	{
 		level = 0;
 		difficulty = 1;
@@ -35,6 +36,8 @@ class Level
 		progress = new LevelProgress(a);
 		
 		aliens = a;
+                
+                levelSongs = audio;
 	}
 	
 	/*--------------------------------------------------
